@@ -1,18 +1,20 @@
 <h2>Testing Contexts with phx.gen.auth</h2>
 
-One issue many beginners run into when adding phx.gen.auth to their application, is that the test suite automatically provided by the context generator is insufficient to handle a context which references a user account (such as a `Comment` which belongs to a `author_id`).  Running the tests could result in various errors such as:   
-<br>
+One issue many beginners run into when adding phx.gen.auth to their application, is that the test suite automatically provided by the context generator is insufficient to handle a Context which references a user account (such as a `Comment` which belongs to an `Author` with `author_id`).  Running the tests could result in various errors such as:   
+
 ```
 ** (MatchError) no match of right hand side value:
 {:error, #Ecto.Changeset<..., errors: [author_id: {"can't be blank", [validation: :required]}], ...}
 ```
 or
+
 ```
 ** (Ecto.ConstraintError) constraint error when attempting to insert struct:
     * comments_author_id_fkey (foreign_key_constraint)
 ```
-<br>
-The root of the problem lies with how the test data is created.  In the test file for each context, you shoud have something like:
+
+The root of the problem lies with how the test data is created.  In the test file for each context, you should have something like:
+
 ```
 @valid_attrs %{title: "some title", body: "some body", author_id: 42}
 @update_attrs %{title: "some updated title", body: "some updated body", author_id: 43}
@@ -29,7 +31,7 @@ end
 ```
 Or maybe the `author_id` field is missing altogether.
 
-Either way, we need to update our tests to first create a user account, and then when `comment_fixture` is called, it should use the id of the account when creating the Comment.
+Either way, we need to update our tests to first create a user account, and then when `comment_fixture` is called, it should use the id of the user when creating the Comment.
 
 To create a user account, there should be a function in `test/support/fixtures/accounts_fixtures.ex` called `user_fixture/1`.
 
@@ -44,7 +46,7 @@ describe "comments" do
   
   @valid_attrs %{title: "some title", body: "some body"}
   @update_attrs %{title: "some updated title", body: "some updated body"}
-  @invalid_attrs %{title: nil, body: nil}
+  @invalid_attrs %{title: nil, body: nil, author_id: nil}
 
   setup do
     %{user: user_fixture()}
@@ -69,9 +71,9 @@ test "list_comments/0 returns all comments", %{user: user} do
 end
 ```
 
-Now our tests should pass, for the most part...
+Now most of our tests should pass, but there are probably still a few failures...
 
-You'll notice that some of our tests call `Comments.create_comment/1` directly, using the module attributes.  This will not be adequate because there is no way to know at compile time what the author's id will be.  Instead, let's follow the example from `comment_fixture/1` and use `Enum.into/2` to create the full set of attrs.  Then, that will get passed to `Comments.create_comment/1` instead:
+You'll notice that some of our tests call `Comments.create_comment/1` directly, using the module attributes.  This will not be adequate because there is no way for the module to know at compile time what the author's id will be.  Instead, let's follow the example from `comment_fixture/1` and use `Enum.into/2` to create the full set of attrs.  Then, that will get passed to `Comments.create_comment/1` instead:
 ```
 test "create_comment/1 with valid data creates a comment", %{user: user} do
   attrs = Enum.into(%{author_id: user.id}, @valid_attrs)
@@ -81,4 +83,4 @@ test "create_comment/1 with valid data creates a comment", %{user: user} do
   assert comment.author_id == user.id
 end
 ```
-After ensuring each test has been updated accordingly, we should be back to 100% passing tests for this context!
+After ensuring each test has been updated accordingly, we should be back to 100% passing tests for this Context!
