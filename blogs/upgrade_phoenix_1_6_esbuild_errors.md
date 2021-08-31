@@ -5,6 +5,7 @@
 Following along with [Chris McCord's upgrade guide](https://gist.github.com/chrismccord/2ab350f154235ad4a4d0f4de6decba7b), after running `mix assets.deploy` you might receive an error like
 ```
 14:38:05.585 [debug] Downloading esbuild from https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-0.12.18.tgz
+
  > js/app.js:17:22: error: Could not resolve "nprogress" (mark it as external to exclude it from the bundle)
     17 │ import NProgress from "nprogress"
        ╵                       ~~~~~~~~~~~
