@@ -16,7 +16,7 @@ Following along with [Chris McCord's upgrade guide](https://gist.github.com/chri
 2 errors
 ** (Mix) `mix esbuild default --minify` exited with 1
 ```
-This is the error we will try to resolve in this post.
+This is the error we will resolve in this post.
 
 ## Upgrading app.js
 
@@ -65,7 +65,7 @@ If we try to run `mix assets.deploy` now, we will get an error like
     27 │ import topbar from "../vendor/topbar"
        ╵                    ~~~~~~~~~~~~~~~~~~
 ```
-This is because the file `topbar.js` is missing from the `vendor` folder.  Simply create the file `assets/vendor/topbar.js` - the contents can be found [here](https://github.com/buunguyen/topbar/blob/master/topbar.js).
+This is because the file `topbar.js` is missing from the `assets/vendor` folder.  You can either copy the file from a new 1.6 project, or manually create the file and paste the contents from [here](https://github.com/buunguyen/topbar/blob/master/topbar.js).
 
 ## Success
 
